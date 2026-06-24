@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FreshMarket | Online Grocery Store</title>
+    <style>
+        /* --- CSS Reset & Variables --- */
+        :root {
+            --primary: #2e7d32;
+            --primary-hover: #1b5e20;
+            --accent: #ff9100;
+            --dark: #212121;
+            --light: #f5f5f5;
+            --white: #ffffff;
+            --gray: #757575;
+            --shadow: 0 4px 6px rgba(0,0,0,0.1);
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--light);
+            color: var(--dark);
+            overflow-x: hidden;
+        }
+
+        /* --- Navigation --- */
+        header {
+            background: var(--white);
+            box-shadow: var(--shadow);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 2rem;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--dark);
+            font-weight: 500;
+            transition: var(--transition);
+        }
+
+        .nav-links a:hover {
+            color: var(--primary);
+        }
+
+        .cart-icon-container {
+            position: relative;
+            cursor: pointer;
+            background: none;
+            border: none;
+            font-size: 1.2rem;
+        }
+
+        .cart-count {
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            background: var(--accent);
+            color: var(--white);
+            font-size: 0.75rem;
+            font-weight: bold;
+            padding: 2px 6px;
+            border-radius: 50%;
+        }
+
+        /* --- Hero Section --- */
+        .hero {
+            background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=1200&q=80') no-repeat center center/cover;
+            height: 400px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            color: var(--white);
+            padding: 0 1rem;
+        }
+
+        .hero h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+        }
+
+        .btn {
+            background-color: var(--primary);
+            color: var(--white);
+            padding: 0.8rem 2rem;
+            border: none;
+            border-radius: 5px;
+            font-size: 1rem;
+            cursor: pointer;
+            text-decoration: none;
+            transition: var(--transition);
+        }
+
+        .btn:hover {
+            background-color: var(--primary-hover);
+        }
+
+        /* --- Main Content Layout --- */
+        main {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+
+        section-title {
+            font-size: 1.8rem;
+            margin-bottom: 1.5rem;
+            border-left: 5px solid var(--primary);
+            padding-left: 10px;
+        }
+
+        /* --- Categories --- */
+        .categories {
+            display: flex;
+            gap: 1rem;
+            overflow-x: auto;
+            padding-bottom: 1rem;
+            margin-bottom: 3rem;
+        }
+
+        .category-card {
+            background: var(--white);
+            padding: 1rem 2rem;
+            border-radius: 8px;
+            box-shadow: var(--shadow);
+            text-align: center;
+            min-width: 150px;
+            cursor: pointer;
+            transition: var(--transition);
+            font-weight: 600;
+        }
+
+        .category-card:hover {
+            background: var(--primary);
+            color: var(--white);
+            transform: translateY(-3px);
+        }
+
+        /* --- Product Grid --- */
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .product-card {
+            background: var(--white);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .product-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .product-img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+
+        .product-info {
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+        }
+
+        .product-title {
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .product-price {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: var(--primary);
+            margin-bottom: 1rem;
+        }
+
+        .add-to-cart-btn {
+            background: var(--dark);
+            color: var(--white);
+            border: none;
+            padding: 0.6rem;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: auto;
+            transition: var(--transition);
+        }
+
+        .add-to-cart-btn:hover {
+            background: var(--primary);
+        }
+
+        /* --- Cart Sidebar (Drawer) --- */
+        .cart-sidebar {
+            position: fixed;
+            top: 0;
+            right: -400px;
+            width: 350px;
+            height: 100%;
+            background: var(--white);
+            box-shadow: -5px 0 15px rgba(0,0,0,0.1);
+            transition: var(--transition);
+            z-index: 1000;
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .cart-sidebar.open {
+            right: 0;
+        }
+
+        .cart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 1rem;
+        }
+
+        .close-cart {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        .cart-items-list {
+            flex-grow: 1;
+            overflow-y: auto;
+            list-style: none;
+        }
+
+        .cart-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #eee;
+        }
+
+        .cart-total-container {
+            border-top: 1px solid #ddd;
+            padding-top: 1rem;
+            margin-top: 1rem;
+        }
+
+        .cart-total-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+        }
+
+        .checkout-btn {
+            width: 100%;
+            background: var(--accent);
+        }
+
+        /* --- Footer --- */
+        footer {
+            background: var(--dark);
+            color: var(--white);
+            text-align: center;
+            padding: 2rem;
+            margin-top: 4rem;
+        }
+
+        /* --- Responsive Styles --- */
+        @media (max-width: 768px) {
+            .nav-links { display: none; }
+            .hero h1 { font-size: 2rem; }
+            .cart-sidebar { width: 100%; right: -100%; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <nav class="nav-container">
+            <a href="#" class="logo">🌿 FreshMarket</a>
+            <ul class="nav-links">
+                <li><a href="#">Home</a></li>
+                <li><a href="#">Shop</a></li>
+                <li><a href="#">Deals</a></li>
+                <li><a href="#">Contact</a></li>
+            </ul>
+            <button class="cart-icon-container" id="cart-icon-btn">
+                🛒 <span class="cart-count" id="cart-counter">0</span>
+            </button>
+        </nav>
+    </header>
+
+    <section class="hero">
+        <h1>Fresh Groceries Delivered to Your Door</h1>
+        <p>Organic, locally-sourced, and handpicked premium quality food items.</p>
+        <a href="#shop" class="btn">Shop Directory</a>
+    </section>
+
+    <main id="shop">
+        
+        <h2 class="section-title">Browse Categories</h2>
+        <section class="categories">
+            <div class="category-card">🍎 Fruits</div>
+            <div class="category-card">🥦 Vegetables</div>
+            <div class="category-card">🍞 Bakery</div>
+            <div class="category-card">🥛 Dairy & Eggs</div>
+            <div class="category-card">🥩 Meat & Seafood</div>
+        </section>
+
+        <h2 class="section-title">Featured Products</h2>
+        <section class="product-grid">
+            
+            <div class="product-card">
+                <img src="https://images.unsplash.com/photo-1619546813926-a78fa6372cd2?auto=format&fit=crop&w=400&q=80" alt="Organic Apples" class="product-img">
+                <div class="product-info">
+                    <h3 class="product-title">Organic Crisp Apples</h3>
+                    <p class="product-price">$3.99 / lb</p>
+                    <button class="add-to-cart-btn" onclick="addToCart('Organic Crisp Apples', 3.99)">Add to Cart</button>
+                </div>
+            </div>
+
+            <div class="product-card">
+                <img src="https://images.unsplash.com/photo-1587334206506-697667ff4a58?auto=format&fit=crop&w=400&q=80" alt="Fresh Broccoli" class="product-img">
+                <div class="product-info">
+                    <h3 class="product-title">Fresh Broccoli Crowns</h3>
+                    <p class="product-price">$2.49 / bunch</p>
+                    <button class="add-to-cart-btn" onclick="addToCart('Fresh Broccoli Crowns', 2.49)">Add to Cart</button>
+                </div>
+            </div>
+
+            <div class="product-card">
+                <img src="https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&w=400&q=80" alt="Artisan Bread" class="product-img">
+                <div class="product-info">
+                    <h3 class="product-title">Sourdough Artisan Bread</h3>
+                    <p class="product-price">$4.50 / loaf</p>
+                    <button class="add-to-cart-btn" onclick="addToCart('Sourdough Artisan Bread', 4.50)">Add to Cart</button>
+                </div>
+            </div>
+
+            <div class="product-card">
+                <img src="https://images.unsplash.com/photo-1563636619-e9143da7973b?auto=format&fit=crop&w=400&q=80" alt="Organic Whole Milk" class="product-img">
+                <div class="product-info">
+                    <h3 class="product-title">Organic Whole Milk (1G)</h3>
+                    <p class="product-price">$5.25</p>
+                    <button class="add-to-cart-btn" onclick="addToCart('Organic Whole Milk (1G)', 5.25)">Add to Cart</button>
+                </div>
+            </div>
+
+        </section>
+    </main>
+
+    <div class="cart-sidebar" id="cart-sidebar">
+        <div class="cart-header">
+            <h2>Your Basket</h2>
+            <button class="close-cart" id="close-cart-btn">&times;</button>
+        </div>
+        <ul class="cart-items-list" id="cart-items-list">
+            </ul>
+        <div class="cart-total-container">
+            <div class="cart-total-row">
+                <span>Total:</span>
+                <span id="cart-total-price">$0.00</span>
+            </div>
+            <button class="btn checkout-btn" onclick="checkoutAlert()">Proceed to Checkout</button>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2026 FreshMarket. All rights reserved.</p>
+    </footer>
+
+    <script>
+        // State management
+        let cart = [];
+        
+        // DOM Elements
+        const cartSidebar = document.getElementById('cart-sidebar');
+        const cartIconBtn = document.getElementById('cart-icon-btn');
+        const closeCartBtn = document.getElementById('close-cart-btn');
+        const cartCounter = document.getElementById('cart-counter');
+        const cartItemsList = document.getElementById('cart-items-list');
+        const cartTotalPrice = document.getElementById('cart-total-price');
+
+        // Toggle Cart Sidebar Sidebar Open/Close
+        cartIconBtn.addEventListener('click', () => cartSidebar.classList.add('open'));
+        closeCartBtn.addEventListener('click', () => cartSidebar.classList.remove('open'));
+
+        // Add item to data array
+        function addToCart(name, price) {
+            // Check if item already exists in the cart array
+            const existingItem = cart.find(item => item.name === name);
+            if (existingItem) {
+                existingItem.quantity += 1;
+            } else {
+                cart.push({ name, price, quantity: 1 });
+            }
+            updateCartUI();
+        }
+
+        // Synchronize state with User Interface
+        function updateCartUI() {
+            // 1. Update total counts in header badge
+            const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+            cartCounter.textContent = totalItems;
+
+            // 2. Clear out old list and render fresh state
+            cartItemsList.innerHTML = '';
+            let totalCost = 0;
+
+            cart.forEach(item => {
+                const itemCost = item.price * item.quantity;
+                totalCost += itemCost;
+
+                const li = document.createElement('li');
+                li.className = 'cart-item';
+                li.innerHTML = `
+                    <div>
+                        <strong>${item.name}</strong><br>
+                        <small>${item.quantity} x $${item.price.toFixed(2)}</small>
+                    </div>
+                    <span>$${itemCost.toFixed(2)}</span>
+                `;
+                cartItemsList.appendChild(li);
+            });
+
+            // 3. Update total cost readout
+            cartTotalPrice.textContent = `$${totalCost.toFixed(2)}`;
+        }
+
+        function checkoutAlert() {
+            if (cart.length === 0) {
+                alert("Your basket is empty. Add items before checking out!");
+            } else {
+                alert("Order Placed Successfully! Thank you for shopping with FreshMarket.");
+                cart = [];
+                updateCartUI();
+                cartSidebar.classList.remove('open');
+            }
+        }
+    </script>
+</body>
+</html>
