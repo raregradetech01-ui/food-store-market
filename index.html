@@ -31,6 +31,72 @@
             overflow-x: hidden;
         }
 
+        /* --- Global Utility --- */
+        .hidden {
+            display: none !important;
+        }
+
+        /* --- Authentication Gate Screen --- */
+        #auth-screen {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url('https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=1200&q=80') no-repeat center center/cover;
+            padding: 1rem;
+        }
+
+        .auth-card {
+            background: var(--white);
+            padding: 3rem 2rem;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+            text-align: center;
+            max-width: 420px;
+            width: 100%;
+        }
+
+        .auth-card h2 {
+            color: var(--primary);
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .auth-card p {
+            color: var(--gray);
+            margin-bottom: 2rem;
+            font-size: 0.95rem;
+        }
+
+        .google-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            width: 100%;
+            background-color: #ffffff;
+            color: #757575;
+            border: 1px solid #ddd;
+            padding: 0.8rem;
+            border-radius: 5px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .google-btn:hover {
+            background-color: #f7f7f7;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            border-color: #ccc;
+        }
+
+        .google-btn img {
+            width: 20px;
+            height: 20px;
+        }
+
         /* --- Navigation --- */
         header {
             background: var(--white);
@@ -60,6 +126,7 @@
             display: flex;
             list-style: none;
             gap: 2rem;
+            align-items: center;
         }
 
         .nav-links a {
@@ -71,6 +138,22 @@
 
         .nav-links a:hover {
             color: var(--primary);
+        }
+
+        .sign-out-btn {
+            background: none;
+            border: 1px solid #f44336;
+            color: #f44336;
+            padding: 0.4rem 0.8rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: var(--transition);
+        }
+
+        .sign-out-btn:hover {
+            background: #f44336;
+            color: var(--white);
         }
 
         .cart-icon-container {
@@ -324,17 +407,29 @@
 
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
 </head>
 <body>
 
-    <header>
+    <div id="auth-screen">
+        <div class="auth-card">
+            <h2>🌿 FreshMarket</h2>
+            <p>Welcome! Please sign in with your Google account to access our grocery directory and start shopping.</p>
+            <button class="google-btn" onclick="signInWithGoogle()">
+                <img src="https://fonts.gstatic.com/s/i/productlogos/googleg/v6/web-24dp/logo_googleg_color_24dp.png" alt="Google Logo">
+                Sign in with Google
+            </button>
+        </div>
+    </div>
+
+    <header class="hidden">
         <nav class="nav-container">
             <a href="#" class="logo">🌿 FreshMarket</a>
             <ul class="nav-links">
                 <li><a href="#">Home</a></li>
                 <li><a href="#">Shop</a></li>
                 <li><a href="#">Deals</a></li>
-                <li><a href="#">Contact</a></li>
+                <li><button class="sign-out-btn" onclick="signOutUser()">Sign Out</button></li>
             </ul>
             <button class="cart-icon-container" id="cart-icon-btn">
                 🛒 <span class="cart-count" id="cart-counter">0</span>
@@ -342,13 +437,13 @@
         </nav>
     </header>
 
-    <section class="hero">
+    <section class="hero hidden">
         <h1>Fresh Groceries Delivered to Your Door</h1>
         <p>Organic, locally-sourced, and handpicked premium quality food items.</p>
         <a href="#shop" class="btn">Shop Directory</a>
     </section>
 
-    <main id="shop">
+    <main id="shop" class="hidden">
         
         <h2 class="section-title">Browse Categories</h2>
         <section class="categories">
@@ -417,7 +512,7 @@
         </div>
     </div>
 
-    <footer>
+    <footer class="hidden">
         <p>&copy; 2026 FreshMarket. All rights reserved.</p>
     </footer>
 
@@ -437,6 +532,54 @@
         // Initialize Firebase app instance
         firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
+        const auth = firebase.auth();
+        const provider = new firebase.auth.GoogleAuthProvider();
+
+        // --- Authentication State Listeners ---
+        let currentUser = null;
+
+        function signInWithGoogle() {
+            auth.signInWithPopup(provider)
+                .then((result) => {
+                    console.log("User signed in successfully:", result.user.displayName);
+                })
+                .catch((error) => {
+                    console.error("Authentication Error:", error.message);
+                    alert("Authentication Failed: " + error.message);
+                });
+        }
+
+        function signOutUser() {
+            auth.signOut().then(() => {
+                // Clear cart on logout
+                cart = [];
+                updateCartUI();
+                document.getElementById('cart-sidebar').classList.remove('open');
+            });
+        }
+
+        // Global watcher tracking Auth status changes
+        auth.onAuthStateChanged((user) => {
+            const authScreen = document.getElementById('auth-screen');
+            const dashboardElements = [
+                document.querySelector('header'),
+                document.querySelector('.hero'),
+                document.getElementById('shop'),
+                document.querySelector('footer')
+            ];
+
+            if (user) {
+                // User is signed in -> show dashboard, hide login gate
+                currentUser = user;
+                authScreen.classList.add('hidden');
+                dashboardElements.forEach(el => el.classList.remove('hidden'));
+            } else {
+                // No user -> show login gate, hide dashboard elements
+                currentUser = null;
+                authScreen.classList.remove('hidden');
+                dashboardElements.forEach(el => el.classList.add('hidden'));
+            }
+        });
 
         // --- Application State Management ---
         let cart = [];
@@ -493,6 +636,11 @@
 
         // Save Order to Firebase Realtime Database
         function checkoutAlert() {
+            if (!currentUser) {
+                alert("Session expired. Please log in again.");
+                return;
+            }
+
             if (cart.length === 0) {
                 alert("Your basket is empty. Add items before checking out!");
                 return;
@@ -501,8 +649,11 @@
             // Calculate final checkout values
             const finalTotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
             
-            // Build the payload structure for database write
+            // Build the payload structure containing authenticated user data
             const orderPayload = {
+                userId: currentUser.uid,
+                userEmail: currentUser.email,
+                userName: currentUser.displayName,
                 items: cart,
                 totalAmount: finalTotal.toFixed(2),
                 timestamp: new Date().toISOString(),
