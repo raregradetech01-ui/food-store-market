@@ -139,7 +139,7 @@
             padding: 0 2rem;
         }
 
-        section-title {
+        .section-title {
             font-size: 1.8rem;
             margin-bottom: 1.5rem;
             border-left: 5px solid var(--primary);
@@ -321,6 +321,9 @@
             .cart-sidebar { width: 100%; right: -100%; }
         }
     </style>
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 </head>
 <body>
 
@@ -419,7 +422,23 @@
     </footer>
 
     <script>
-        // State management
+        // --- Firebase Configuration Initialization ---
+        const firebaseConfig = {
+            apiKey: "AIzaSyBd-H5R8QSYQaSyu6Z-kPKHITthL5uMzxo",
+            authDomain: "food-store-market.firebaseapp.com",
+            databaseURL: "https://food-store-market-default-rtdb.firebaseio.com",
+            projectId: "food-store-market",
+            storageBucket: "food-store-market.firebasestorage.app",
+            messagingSenderId: "415845174728",
+            appId: "1:415845174728:web:4a2e82194ea877acf584fd",
+            measurementId: "G-EFQ1M1NWN9"
+        };
+
+        // Initialize Firebase app instance
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+
+        // --- Application State Management ---
         let cart = [];
         
         // DOM Elements
@@ -436,7 +455,6 @@
 
         // Add item to data array
         function addToCart(name, price) {
-            // Check if item already exists in the cart array
             const existingItem = cart.find(item => item.name === name);
             if (existingItem) {
                 existingItem.quantity += 1;
@@ -448,11 +466,9 @@
 
         // Synchronize state with User Interface
         function updateCartUI() {
-            // 1. Update total counts in header badge
             const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
             cartCounter.textContent = totalItems;
 
-            // 2. Clear out old list and render fresh state
             cartItemsList.innerHTML = '';
             let totalCost = 0;
 
@@ -472,19 +488,39 @@
                 cartItemsList.appendChild(li);
             });
 
-            // 3. Update total cost readout
             cartTotalPrice.textContent = `$${totalCost.toFixed(2)}`;
         }
 
+        // Save Order to Firebase Realtime Database
         function checkoutAlert() {
             if (cart.length === 0) {
                 alert("Your basket is empty. Add items before checking out!");
-            } else {
-                alert("Order Placed Successfully! Thank you for shopping with FreshMarket.");
-                cart = [];
-                updateCartUI();
-                cartSidebar.classList.remove('open');
+                return;
             }
+
+            // Calculate final checkout values
+            const finalTotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            
+            // Build the payload structure for database write
+            const orderPayload = {
+                items: cart,
+                totalAmount: finalTotal.toFixed(2),
+                timestamp: new Date().toISOString(),
+                status: "Pending Processing"
+            };
+
+            // Push order entry object to 'orders' node root in Firebase Realtime DB
+            database.ref('orders').push(orderPayload)
+                .then(() => {
+                    alert("Success! Your order has been registered in our database.");
+                    cart = [];
+                    updateCartUI();
+                    cartSidebar.classList.remove('open');
+                })
+                .catch((error) => {
+                    console.error("Firebase Database write operation failed:", error);
+                    alert("Error saving your order. Please confirm your Firebase DB rules configuration.");
+                });
         }
     </script>
 </body>
