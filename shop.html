@@ -1,114 +1,276 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Shop - Premium Collection</title>
-  <script src="https://cdn.tailwindcss.com"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shop Directory - FreshMarket</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: { 50: '#f0fdf4', 100: '#dcfce7', 500: '#2e7d32', 600: '#1b5e20' }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.75);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+        }
+    </style>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
 </head>
-<body class="min-h-screen bg-gradient-to-br from-gray-900 via-slate-900 to-zinc-950 text-white font-sans antialiased pb-12">
+<body class="bg-slate-50 text-slate-900 font-sans antialiased min-h-screen flex flex-col pb-12">
 
-  <div class="fixed top-6 left-1/2 -translate-x-1/2 z-50 w-auto">
-    <nav class="flex items-center gap-2 p-1.5 rounded-full bg-black/40 backdrop-blur-md border border-white/10 shadow-2xl">
-      <a href="shop.html" class="px-5 py-2 text-sm font-medium rounded-full bg-white text-gray-950 shadow-md transition-all duration-200">
-        Shop
-      </a>
-      <a href="deals.html" class="px-5 py-2 text-sm font-medium rounded-full text-gray-400 hover:text-white transition-all duration-200">
-        Deals
-      </a>
-    </nav>
-  </div>
-
-  <main class="max-w-6xl mx-auto px-6 pt-32">
-    
-    <header class="mb-12 text-center md:text-left">
-      <span class="inline-block px-4 py-1.5 text-xs font-semibold tracking-widest uppercase bg-white/10 border border-white/20 rounded-full backdrop-blur-md text-indigo-300">
-        Curated Collection
-      </span>
-      <h1 class="text-4xl md:text-5xl font-bold mt-4 tracking-tight">
-        The Digital Shop
-      </h1>
-      <p class="text-gray-400 mt-2 max-w-md">
-        High-end tech essentials designed to elevate your daily workflow and lifestyle.
-      </p>
+    <header class="fixed top-6 left-1/2 -translate-x-1/2 z-[1000] w-[calc(100%-2rem)] max-w-4xl px-4">
+        <div class="glass-panel rounded-full px-6 py-3 flex items-center justify-between shadow-lg">
+            <a href="index.html" class="text-xl font-bold text-brand-500 tracking-tight flex items-center gap-1">🌿 FreshMarket</a>
+            <nav class="hidden md:flex items-center gap-1">
+                <a href="index.html" class="px-4 py-2 text-sm font-medium rounded-full text-slate-600 hover:text-brand-500 hover:bg-white/50 transition-all">Home</a>
+                <a href="shop.html" class="px-4 py-2 text-sm font-medium rounded-full bg-brand-500 text-white shadow-sm">Shop</a>
+                <a href="deals.html" class="px-4 py-2 text-sm font-medium rounded-full text-slate-600 hover:text-brand-500 hover:bg-white/50 transition-all">Deals</a>
+            </nav>
+            <div class="flex items-center gap-3">
+                <button id="cart-icon-btn" class="relative p-2 text-xl bg-white rounded-full border border-slate-200/60 shadow-sm active:scale-95 transition-transform">
+                    🛒 <span id="cart-counter" class="absolute -top-1 -right-1 bg-amber-500 text-white font-bold text-[10px] px-1.5 py-0.5 rounded-full">0</span>
+                </button>
+                <button onclick="signOutUser()" class="px-4 py-2 text-xs font-semibold rounded-full border border-rose-200 text-rose-600 bg-rose-50/50 hover:bg-rose-500 hover:text-white transition-all">Sign Out</button>
+            </div>
+        </div>
     </header>
 
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-      
-      <div class="group relative flex flex-col justify-between p-6 rounded-2xl bg-white/5 backdrop-blur-xl border border-white/10 hover:border-white/20 hover:bg-white/10 transition-all duration-300 shadow-xl">
-        <div>
-          <span class="inline-block px-3 py-1 text-xs font-medium rounded-full bg-white/5 border border-white/10 text-gray-300 mb-4">
-            Audio
-          </span>
-          <div class="h-36 w-full flex items-center justify-center text-5xl bg-gradient-to-b from-white/5 to-transparent rounded-xl mb-4 group-hover:scale-105 transition-transform duration-300">
-            🎧
-          </div>
-          <h3 class="text-lg font-semibold text-white tracking-tight mb-1">Premium Wireless Pods</h3>
-        </div>
-        <div class="flex items-center justify-between mt-6 pt-4 border-t border-white/5">
-          <span class="text-xl font-bold text-indigo-300">$129</span>
-          <button class="px-4 py-2 text-xs font-medium bg-white text-gray-950 rounded-full hover:bg-gray-200 active:scale-95 transition-all duration-200 shadow-md">
-            Buy Now
-          </button>
-        </div>
-      </div>
+    <main class="max-w-7xl mx-auto px-4 md:px-8 pt-32 w-full flex-1">
+        <header class="mb-10">
+            <span class="text-xs font-bold text-brand-500 uppercase tracking-widest bg-brand-50 px-3 py-1 rounded-full border border-brand-100">Catalog Registry</span>
+            <h1 class="text-3xl md:text-4xl font-extrabold tracking-tight mt-2 text-slate-800">Shop Directory</h1>
+            <p class="text-slate-400 text-sm mt-1">Filter items by category and add raw components directly into your active runtime invoice state.</p>
+        </header>
 
-      <div class="group relative flex flex-col justify-between p-6 rounded-2xl bg-white/5 backdrop-blur-xl border border-white/10 hover:border-white/20 hover:bg-white/10 transition-all duration-300 shadow-xl">
-        <div>
-          <span class="inline-block px-3 py-1 text-xs font-medium rounded-full bg-white/5 border border-white/10 text-gray-300 mb-4">
-            Wearables
-          </span>
-          <div class="h-36 w-full flex items-center justify-center text-5xl bg-gradient-to-b from-white/5 to-transparent rounded-xl mb-4 group-hover:scale-105 transition-transform duration-300">
-            ⌚
-          </div>
-          <h3 class="text-lg font-semibold text-white tracking-tight mb-1">Minimalist Smart Watch</h3>
+        <div class="flex items-center gap-2 overflow-x-auto pb-4 mb-8 scrollbar-hide">
+            <button onclick="filterCategory('all', this)" class="category-pill whitespace-nowrap px-5 py-2 text-xs font-bold rounded-full border border-brand-500 bg-brand-500 text-white transition-all">✨ All Items</button>
+            <button onclick="filterCategory('fruits', this)" class="category-pill whitespace-nowrap px-5 py-2 text-xs font-semibold rounded-full border border-slate-200 bg-white text-slate-600 hover:border-brand-500 hover:text-brand-500 transition-all">🍎 Fruits</button>
+            <button onclick="filterCategory('vegetables', this)" class="category-pill whitespace-nowrap px-5 py-2 text-xs font-semibold rounded-full border border-slate-200 bg-white text-slate-600 hover:border-brand-500 hover:text-brand-500 transition-all">🥦 Vegetables</button>
+            <button onclick="filterCategory('bakery', this)" class="category-pill whitespace-nowrap px-5 py-2 text-xs font-semibold rounded-full border border-slate-200 bg-white text-slate-600 hover:border-brand-500 hover:text-brand-500 transition-all">🍞 Bakery</button>
+            <button onclick="filterCategory('dairy', this)" class="category-pill whitespace-nowrap px-5 py-2 text-xs font-semibold rounded-full border border-slate-200 bg-white text-slate-600 hover:border-brand-500 hover:text-brand-500 transition-all">🥛 Dairy & Eggs</button>
+            <button onclick="filterCategory('meat', this)" class="category-pill whitespace-nowrap px-5 py-2 text-xs font-semibold rounded-full border border-slate-200 bg-white text-slate-600 hover:border-brand-500 hover:text-brand-500 transition-all">🥩 Meat & Seafood</button>
         </div>
-        <div class="flex items-center justify-between mt-6 pt-4 border-t border-white/5">
-          <span class="text-xl font-bold text-indigo-300">$199</span>
-          <button class="px-4 py-2 text-xs font-medium bg-white text-gray-950 rounded-full hover:bg-gray-200 active:scale-95 transition-all duration-200 shadow-md">
-            Buy Now
-          </button>
-        </div>
-      </div>
 
-      <div class="group relative flex flex-col justify-between p-6 rounded-2xl bg-white/5 backdrop-blur-xl border border-white/10 hover:border-white/20 hover:bg-white/10 transition-all duration-300 shadow-xl">
-        <div>
-          <span class="inline-block px-3 py-1 text-xs font-medium rounded-full bg-white/5 border border-white/10 text-gray-300 mb-4">
-            Accessories
-          </span>
-          <div class="h-36 w-full flex items-center justify-center text-5xl bg-gradient-to-b from-white/5 to-transparent rounded-xl mb-4 group-hover:scale-105 transition-transform duration-300">
-            ⌨️
-          </div>
-          <h3 class="text-lg font-semibold text-white tracking-tight mb-1">Mechanical Keyboard</h3>
+        <div id="directory-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-6">
+            <div class="product-card group bg-white border border-slate-100 rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all flex flex-col" data-category="fruits">
+                <img src="https://images.unsplash.com/photo-1619546813926-a78fa6372cd2?auto=format&fit=crop&w=400&q=80" class="h-44 w-full object-cover group-hover:scale-105 transition-transform duration-300" alt="Apples">
+                <div class="p-5 flex flex-col flex-1">
+                    <h3 class="font-bold text-slate-800 tracking-tight text-base mb-1">Organic Crisp Apples</h3>
+                    <p class="text-brand-500 font-extrabold text-lg mb-4">$3.99 <span class="text-xs text-slate-400 font-normal">/ lb</span></p>
+                    <button onclick="addToCart('Organic Crisp Apples', 3.99)" class="w-full mt-auto py-2 bg-slate-900 hover:bg-brand-500 text-white font-medium text-xs rounded-full transition-colors active:scale-95">Add to Cart</button>
+                </div>
+            </div>
+            <div class="product-card group bg-white border border-slate-100 rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all flex flex-col" data-category="fruits">
+                <img src="https://images.unsplash.com/photo-1571771894821-ce9b6c11b08e?auto=format&fit=crop&w=400&q=80" class="h-44 w-full object-cover group-hover:scale-105 transition-transform duration-300" alt="Bananas">
+                <div class="p-5 flex flex-col flex-1">
+                    <h3 class="font-bold text-slate-800 tracking-tight text-base mb-1">Organic Cavendish Bananas</h3>
+                    <p class="text-brand-500 font-extrabold text-lg mb-4">$1.89 <span class="text-xs text-slate-400 font-normal">/ lb</span></p>
+                    <button onclick="addToCart('Organic Cavendish Bananas', 1.89)" class="w-full mt-auto py-2 bg-slate-900 hover:bg-brand-500 text-white font-medium text-xs rounded-full transition-colors active:scale-95">Add to Cart</button>
+                </div>
+            </div>
+            <div class="product-card group bg-white border border-slate-100 rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all flex flex-col" data-category="vegetables">
+                <img src="https://i.postimg.cc/LX0Hg6hM/Gemini-Generated-Image-4b2byi4b2byi4b2b-(1).png" class="h-44 w-full object-cover group-hover:scale-105 transition-transform duration-300" alt="Broccoli">
+                <div class="p-5 flex flex-col flex-1">
+                    <h3 class="font-bold text-slate-800 tracking-tight text-base mb-1">Fresh Broccoli Crowns</h3>
+                    <p class="text-brand-500 font-extrabold text-lg mb-4">$2.49 <span class="text-xs text-slate-400 font-normal">/ bunch</span></p>
+                    <button onclick="addToCart('Fresh Broccoli Crowns', 2.49)" class="w-full mt-auto py-2 bg-slate-900 hover:bg-brand-500 text-white font-medium text-xs rounded-full transition-colors active:scale-95">Add to Cart</button>
+                </div>
+            </div>
+            <div class="product-card group bg-white border border-slate-100 rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all flex flex-col" data-category="vegetables">
+                <img src="https://images.unsplash.com/photo-1597362925123-77861d3fbac7?auto=format&fit=crop&w=400&q=80" class="h-44 w-full object-cover group-hover:scale-105 transition-transform duration-300" alt="Tomatoes">
+                <div class="p-5 flex flex-col flex-1">
+                    <h3 class="font-bold text-slate-800 tracking-tight text-base mb-1">Roma Vine Tomatoes</h3>
+                    <p class="text-brand-500 font-extrabold text-lg mb-4">$2.99 <span class="text-xs text-slate-400 font-normal">/ lb</span></p>
+                    <button onclick="addToCart('Roma Vine Tomatoes', 2.99)" class="w-full mt-auto py-2 bg-slate-900 hover:bg-brand-500 text-white font-medium text-xs rounded-full transition-colors active:scale-95">Add to Cart</button>
+                </div>
+            </div>
+            <div class="product-card group bg-white border border-slate-100 rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all flex flex-col" data-category="bakery">
+                <img src="https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&w=400&q=80" class="h-44 w-full object-cover group-hover:scale-105 transition-transform duration-300" alt="Artisan Bread">
+                <div class="p-5 flex flex-col flex-1">
+                    <h3 class="font-bold text-slate-800 tracking-tight text-base mb-1">Sourdough Artisan Bread</h3>
+                    <p class="text-brand-500 font-extrabold text-lg mb-4">$4.50 <span class="text-xs text-slate-400 font-normal">/ loaf</span></p>
+                    <button onclick="addToCart('Sourdough Artisan Bread', 4.50)" class="w-full mt-auto py-2 bg-slate-900 hover:bg-brand-500 text-white font-medium text-xs rounded-full transition-colors active:scale-95">Add to Cart</button>
+                </div>
+            </div>
+            <div class="product-card group bg-white border border-slate-100 rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all flex flex-col" data-category="bakery">
+                <img src="https://images.unsplash.com/photo-1555507036-ab1f4038808a?auto=format&fit=crop&w=400&q=80" class="h-44 w-full object-cover group-hover:scale-105 transition-transform duration-300" alt="Croissants">
+                <div class="p-5 flex flex-col flex-1">
+                    <h3 class="font-bold text-slate-800 tracking-tight text-base mb-1">Butter Croissants (4-Pack)</h3>
+                    <p class="text-brand-500 font-extrabold text-lg mb-4">$5.00</p>
+                    <button onclick="addToCart('Butter Croissants (4-Pack)', 5.00)" class="w-full mt-auto py-2 bg-slate-900 hover:bg-brand-500 text-white font-medium text-xs rounded-full transition-colors active:scale-95">Add to Cart</button>
+                </div>
+            </div>
+            <div class="product-card group bg-white border border-slate-100 rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all flex flex-col" data-category="dairy">
+                <img src="https://images.unsplash.com/photo-1563636619-e9143da7973b?auto=format&fit=crop&w=400&q=80" class="h-44 w-full object-cover group-hover:scale-105 transition-transform duration-300" alt="Milk">
+                <div class="p-5 flex flex-col flex-1">
+                    <h3 class="font-bold text-slate-800 tracking-tight text-base mb-1">Organic Whole Milk (1G)</h3>
+                    <p class="text-brand-500 font-extrabold text-lg mb-4">$5.25</p>
+                    <button onclick="addToCart('Organic Whole Milk (1G)', 5.25)" class="w-full mt-auto py-2 bg-slate-900 hover:bg-brand-500 text-white font-medium text-xs rounded-full transition-colors active:scale-95">Add to Cart</button>
+                </div>
+            </div>
+            <div class="product-card group bg-white border border-slate-100 rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all flex flex-col" data-category="dairy">
+                <img src="https://images.unsplash.com/photo-1516448620398-c5f44bf9f441?auto=format&fit=crop&w=400&q=80" class="h-44 w-full object-cover group-hover:scale-105 transition-transform duration-300" alt="Eggs">
+                <div class="p-5 flex flex-col flex-1">
+                    <h3 class="font-bold text-slate-800 tracking-tight text-base mb-1">Free Range Eggs (Dozen)</h3>
+                    <p class="text-brand-500 font-extrabold text-lg mb-4">$4.75</p>
+                    <button onclick="addToCart('Free Range Large Eggs (Dozen)', 4.75)" class="w-full mt-auto py-2 bg-slate-900 hover:bg-brand-500 text-white font-medium text-xs rounded-full transition-colors active:scale-95">Add to Cart</button>
+                </div>
+            </div>
+            <div class="product-card group bg-white border border-slate-100 rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all flex flex-col" data-category="meat">
+                <img src="https://i.postimg.cc/2yJPr1y5/Gemini-Generated-Image-rhxuwdrhxuwdrhxu.png" class="h-44 w-full object-cover group-hover:scale-105 transition-transform duration-300" alt="Chicken Breast">
+                <div class="p-5 flex flex-col flex-1">
+                    <h3 class="font-bold text-slate-800 tracking-tight text-base mb-1">Organic Chicken Breasts</h3>
+                    <p class="text-brand-500 font-extrabold text-lg mb-4">$8.99 <span class="text-xs text-slate-400 font-normal">/ lb</span></p>
+                    <button onclick="addToCart('Organic Chicken Breasts', 8.99)" class="w-full mt-auto py-2 bg-slate-900 hover:bg-brand-500 text-white font-medium text-xs rounded-full transition-colors active:scale-95">Add to Cart</button>
+                </div>
+            </div>
+            <div class="product-card group bg-white border border-slate-100 rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all flex flex-col" data-category="meat">
+                <img src="https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=400&q=80" class="h-44 w-full object-cover group-hover:scale-105 transition-transform duration-300" alt="Ribeye Steak">
+                <div class="p-5 flex flex-col flex-1">
+                    <h3 class="font-bold text-slate-800 tracking-tight text-base mb-1">Prime Ribeye Steak</h3>
+                    <p class="text-brand-500 font-extrabold text-lg mb-4">$14.99 <span class="text-xs text-slate-400 font-normal">/ lb</span></p>
+                    <button onclick="addToCart('Prime Ribeye Steak', 14.99)" class="w-full mt-auto py-2 bg-slate-900 hover:bg-brand-500 text-white font-medium text-xs rounded-full transition-colors active:scale-95">Add to Cart</button>
+                </div>
+            </div>
         </div>
-        <div class="flex items-center justify-between mt-6 pt-4 border-t border-white/5">
-          <span class="text-xl font-bold text-indigo-300">$149</span>
-          <button class="px-4 py-2 text-xs font-medium bg-white text-gray-950 rounded-full hover:bg-gray-200 active:scale-95 transition-all duration-200 shadow-md">
-            Buy Now
-          </button>
-        </div>
-      </div>
+    </main>
 
-      <div class="group relative flex flex-col justify-between p-6 rounded-2xl bg-white/5 backdrop-blur-xl border border-white/10 hover:border-white/20 hover:bg-white/10 transition-all duration-300 shadow-xl">
-        <div>
-          <span class="inline-block px-3 py-1 text-xs font-medium rounded-full bg-white/5 border border-white/10 text-gray-300 mb-4">
-            Displays
-          </span>
-          <div class="h-36 w-full flex items-center justify-center text-5xl bg-gradient-to-b from-white/5 to-transparent rounded-xl mb-4 group-hover:scale-105 transition-transform duration-300">
-            🖥️
-          </div>
-          <h3 class="text-lg font-semibold text-white tracking-tight mb-1">Curved Monitor</h3>
+    <div id="cart-sidebar" class="fixed top-0 right-0 h-full w-full max-w-sm bg-white shadow-2xl z-[5000] translate-x-full transition-transform duration-300 ease-in-out flex flex-col">
+        <div class="p-6 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
+            <h2 class="text-lg font-bold text-slate-800 flex items-center gap-2">🛒 Your Basket</h2>
+            <button id="close-cart-btn" class="w-8 h-8 rounded-full bg-white hover:bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-500 font-bold transition-colors shadow-sm">&times;</button>
         </div>
-        <div class="flex items-center justify-between mt-6 pt-4 border-t border-white/5">
-          <span class="text-xl font-bold text-indigo-300">$449</span>
-          <button class="px-4 py-2 text-xs font-medium bg-white text-gray-950 rounded-full hover:bg-gray-200 active:scale-95 transition-all duration-200 shadow-md">
-            Buy Now
-          </button>
+        <ul id="cart-items-list" class="flex-1 overflow-y-auto p-6 space-y-4"></ul>
+        <div class="p-6 border-t border-slate-100 bg-slate-50/50 space-y-4">
+            <div class="flex items-center justify-between font-bold text-slate-800 text-lg">
+                <span>Total Amount:</span>
+                <span id="cart-total-price">$0.00</span>
+            </div>
+            <button onclick="checkoutAlert()" class="w-full py-3 bg-brand-500 hover:bg-brand-600 text-white font-semibold rounded-full shadow-lg shadow-brand-600/10 active:scale-95 transition-all text-sm">Proceed to Checkout</button>
         </div>
-      </div>
-
     </div>
-  </main>
 
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyBd-H5R8QSYQaSyu6Z-kPKHITthL5uMzxo",
+            authDomain: "food-store-market.firebaseapp.com",
+            databaseURL: "https://food-store-market-default-rtdb.firebaseio.com",
+            projectId: "food-store-market",
+            storageBucket: "food-store-market.firebasestorage.app",
+            messagingSenderId: "415845174728",
+            appId: "1:415845174728:web:4a2e82194ea877acf584fd",
+            measurementId: "G-EFQ1M1NWN9"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+        const auth = firebase.auth();
+
+        let currentUser = null;
+        let cart = JSON.parse(localStorage.getItem('fm_cart')) || [];
+
+        auth.onAuthStateChanged((user) => {
+            if (user) {
+                currentUser = user;
+                updateCartUI();
+            } else {
+                window.location.href = 'index.html'; // Safe fallback redirect
+            }
+        });
+
+        function signOutUser() {
+            auth.signOut().then(() => {
+                localStorage.removeItem('fm_cart');
+                window.location.href = 'index.html';
+            });
+        }
+
+        // Filter Actions
+        function filterCategory(cat, btn) {
+            document.querySelectorAll('.category-pill').forEach(b => {
+                b.classList.remove('bg-brand-500', 'text-white', 'border-brand-500');
+                b.classList.add('bg-white', 'text-slate-600', 'border-slate-200');
+            });
+            btn.classList.remove('bg-white', 'text-slate-600', 'border-slate-200');
+            btn.classList.add('bg-brand-500', 'text-white', 'border-brand-500');
+
+            document.querySelectorAll('.product-card').forEach(card => {
+                if(cat === 'all' || card.getAttribute('data-category') === cat) {
+                    card.style.display = 'flex';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+
+        // Shared Basket Functions
+        const sidebar = document.getElementById('cart-sidebar');
+        document.getElementById('cart-icon-btn').addEventListener('click', () => sidebar.classList.remove('translate-x-full'));
+        document.getElementById('close-cart-btn').addEventListener('click', () => sidebar.classList.add('translate-x-full'));
+
+        function addToCart(name, price) {
+            const existing = cart.find(i => i.name === name);
+            if(existing) { existing.quantity += 1; } else { cart.push({name, price, quantity: 1}); }
+            localStorage.setItem('fm_cart', JSON.stringify(cart));
+            updateCartUI();
+        }
+
+        function updateCartUI() {
+            document.getElementById('cart-counter').textContent = cart.reduce((sum, i) => sum + i.quantity, 0);
+            const list = document.getElementById('cart-items-list');
+            let cost = 0;
+            list.innerHTML = '';
+            
+            cart.forEach((item, index) => {
+                cost += (item.price * item.quantity);
+                const li = document.createElement('li');
+                li.className = 'flex items-center justify-between p-3 rounded-xl bg-slate-50 border border-slate-100';
+                li.innerHTML = `
+                    <div class="text-sm">
+                        <p class="font-semibold text-slate-800">${item.name}</p>
+                        <p class="text-xs text-slate-400 font-medium">${item.quantity} × $${item.price.toFixed(2)}</p>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span class="text-sm font-bold text-slate-700">$${(item.price * item.quantity).toFixed(2)}</span>
+                        <button onclick="removeFromCart(${index})" class="text-slate-300 hover:text-rose-500 font-bold text-lg">&times;</button>
+                    </div>
+                `;
+                list.appendChild(li);
+            });
+            document.getElementById('cart-total-price').textContent = `$${cost.toFixed(2)}`;
+        }
+
+        function removeFromCart(index) {
+            cart.splice(index, 1);
+            localStorage.setItem('fm_cart', JSON.stringify(cart));
+            updateCartUI();
+        }
+
+        function checkoutAlert() {
+            if (cart.length === 0) return alert("Basket is empty!");
+            const finalTotal = cart.reduce((sum, i) => sum + (i.price * i.quantity), 0);
+            const payload = {
+                userId: currentUser.uid, userEmail: currentUser.email, userName: currentUser.displayName,
+                items: cart, totalAmount: finalTotal.toFixed(2), timestamp: new Date().toISOString(), status: "Pending Processing"
+            };
+            database.ref('orders').push(payload).then(() => {
+                alert("Success! Order saved.");
+                cart = []; localStorage.removeItem('fm_cart'); updateCartUI();
+                sidebar.classList.add('translate-x-full');
+            });
+        }
+    </script>
 </body>
 </html>
