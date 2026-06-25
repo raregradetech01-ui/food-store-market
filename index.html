@@ -26,6 +26,17 @@
         .parallax-video-mask {
             clip-path: inset(0 0 0 0);
         }
+        /* Custom scrollbar for a cleaner look in the cart drawer */
+        .scrollbar-thin::-webkit-scrollbar {
+            width: 6px;
+        }
+        .scrollbar-thin::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .scrollbar-thin::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 10px;
+        }
     </style>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
@@ -33,7 +44,6 @@
 </head>
 <body class="bg-slate-50 text-slate-900 font-sans antialiased min-h-screen flex flex-col">
 
-    <!-- Auth Gateway Gate Screen -->
     <div id="auth-screen" class="fixed inset-0 z-[2000] flex items-center justify-center p-4 bg-cover bg-center" style="background-image: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=1200&q=80');">
         <div class="bg-white/90 backdrop-blur-xl border border-white/20 p-8 md:p-12 rounded-3xl shadow-2xl max-w-md w-full text-center">
             <span class="text-4xl">🌿</span>
@@ -46,9 +56,7 @@
         </div>
     </div>
 
-    <!-- Main Dynamic Content Wrapper -->
     <div id="app-content" class="hidden flex-col flex-1">
-        <!-- Floating Pill Navigation Header -->
         <header class="fixed top-6 left-1/2 -translate-x-1/2 z-[1000] w-[calc(100%-2rem)] max-w-4xl px-4">
             <div class="glass-panel rounded-full px-6 py-3 flex items-center justify-between shadow-lg">
                 <a href="index.html" class="text-xl font-bold text-brand-500 tracking-tight flex items-center gap-1">🌿 FreshMarket</a>
@@ -66,7 +74,6 @@
             </div>
         </header>
 
-        <!-- Hero Canvas Section -->
         <section class="relative h-[550px] flex items-center justify-center text-center px-4 bg-cover bg-center text-white" style="background-image: linear-gradient(rgba(0,0,0,0.55), rgba(0,0,0,0.55)), url('https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=1200&q=80');">
             <div class="max-w-2xl mt-16">
                 <h1 class="text-4xl md:text-6xl font-extrabold tracking-tight mb-4">Fresh Groceries <br>Delivered To Your Counter</h1>
@@ -75,7 +82,6 @@
             </div>
         </section>
 
-        <!-- Featured Overview Block -->
         <main class="max-w-7xl mx-auto px-4 md:px-8 py-16 w-full flex-1">
             <div class="flex flex-col md:flex-row items-center justify-between mb-12 gap-4">
                 <div>
@@ -87,7 +93,6 @@
                 </div>
             </div>
 
-            <!-- Perks Metrics Grid -->
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
                 <div class="bg-white border border-slate-100 p-8 rounded-2xl shadow-sm hover:shadow-md transition-shadow">
                     <div class="w-12 h-12 rounded-full bg-brand-50 text-brand-500 flex items-center justify-center text-xl font-bold mb-4">🌾</div>
@@ -106,7 +111,6 @@
                 </div>
             </div>
 
-            <!-- Video Parallax Reveal Element -->
             <section class="relative h-72 rounded-3xl overflow-hidden flex items-center justify-center shadow-lg my-12">
                 <div class="parallax-video-mask absolute inset-0 w-full h-full z-10">
                     <video autoplay loop muted playsinline class="fixed top-0 left-0 w-full h-full object-cover pointer-events-none">
@@ -121,7 +125,6 @@
             </section>
         </main>
 
-        <!-- Professional Corporate Footer -->
         <footer class="bg-slate-900 text-slate-400 border-t border-slate-800 pt-16 pb-12 w-full mt-auto">
             <div class="max-w-7xl mx-auto px-4 md:px-8 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8 mb-12 text-left">
                 <div>
@@ -173,23 +176,96 @@
         </footer>
     </div>
 
-    <!-- Basket Sidebar Drawer Layout -->
-    <div id="cart-sidebar" class="fixed top-0 right-0 h-full w-full max-w-sm bg-white shadow-2xl z-[5000] translate-x-full transition-transform duration-300 ease-in-out flex flex-col">
+    <div id="cart-sidebar" class="fixed top-0 right-0 h-full w-full max-w-md bg-white shadow-2xl z-[5000] translate-x-full transition-transform duration-300 ease-in-out flex flex-col border-l border-slate-200">
         <div class="p-6 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
             <h2 class="text-lg font-bold text-slate-800 flex items-center gap-2">🛒 Your Basket</h2>
             <button id="close-cart-btn" class="w-8 h-8 rounded-full bg-white hover:bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-500 font-bold transition-colors shadow-sm">&times;</button>
         </div>
-        <ul id="cart-items-list" class="flex-1 overflow-y-auto p-6 space-y-4"></ul>
-        <div class="p-6 border-t border-slate-100 bg-slate-50/50 space-y-4">
-            <div class="flex items-center justify-between font-bold text-slate-800 text-lg">
-                <span>Total Amount:</span>
-                <span id="cart-total-price">$0.00</span>
+        
+        <div class="flex-1 overflow-y-auto p-6 space-y-6 scrollbar-thin">
+            <div>
+                <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3">Selected Items</h3>
+                <ul id="cart-items-list" class="space-y-4"></ul>
             </div>
-            <button onclick="checkoutAlert()" class="w-full py-3 bg-brand-500 hover:bg-brand-600 text-white font-semibold rounded-full shadow-lg shadow-brand-600/10 active:scale-95 transition-all text-sm">Proceed to Checkout</button>
+            
+            <hr class="border-slate-100/80">
+            
+            <div class="space-y-3">
+                <div class="flex items-center justify-between">
+                    <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400">Delivery Method</h3>
+                    <div class="flex bg-slate-100 p-0.5 rounded-full border border-slate-200/60">
+                        <button type="button" onclick="setDeliveryType('delivery')" id="btn-delivery" class="px-4 py-1.5 text-xs font-semibold rounded-full bg-white text-slate-900 shadow-sm transition-all">Delivery</button>
+                        <button type="button" onclick="setDeliveryType('pickup')" id="btn-pickup" class="px-4 py-1.5 text-xs font-semibold rounded-full text-slate-500 hover:text-slate-900 transition-all">Collection</button>
+                    </div>
+                </div>
+                
+                <div id="address-input-wrapper" class="space-y-1.5">
+                    <label class="text-xs font-semibold text-slate-500 flex items-center gap-1 pl-1">📍 Delivery Address</label>
+                    <input type="text" id="delivery-address" placeholder="Enter street name, suburb, or unit details..." class="w-full bg-slate-50 border border-slate-200 focus:border-brand-500 rounded-full px-4 py-2.5 text-sm outline-none transition-all placeholder-slate-400 shadow-inner">
+                </div>
+                <div id="pickup-note" class="hidden p-3.5 bg-emerald-50 border border-emerald-100 rounded-2xl text-xs text-emerald-800 leading-relaxed">
+                    <strong>In-store Collection:</strong> Your items will be carefully bundled and ready for pickup at our central logistics bay within 30-45 minutes following verification.
+                </div>
+            </div>
+            
+            <hr class="border-slate-100/80">
+            
+            <div class="space-y-3">
+                <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400">Payment Option</h3>
+                <div class="space-y-2">
+                    <label class="flex items-center justify-between p-3.5 rounded-2xl border border-slate-200 bg-slate-50/50 cursor-pointer hover:bg-slate-50/80 transition-all">
+                        <div class="flex items-center gap-3 text-sm">
+                            <span class="text-lg">💳</span>
+                            <div>
+                                <p class="font-medium text-slate-800">Credit / Debit Card</p>
+                                <p class="text-xs text-slate-400">Secure validation checkout portal</p>
+                            </div>
+                        </div>
+                        <input type="radio" name="payment-method" value="card" checked class="w-4 h-4 accent-brand-500 cursor-pointer">
+                    </label>
+                    <label class="flex items-center justify-between p-3.5 rounded-2xl border border-slate-200 bg-slate-50/50 cursor-pointer hover:bg-slate-50/80 transition-all">
+                        <div class="flex items-center gap-3 text-sm">
+                            <span class="text-lg">📱</span>
+                            <div>
+                                <p class="font-medium text-slate-800">Instant EFT</p>
+                                <p class="text-xs text-slate-400">Direct instant banking synchronization</p>
+                            </div>
+                        </div>
+                        <input type="radio" name="payment-method" value="eft" class="w-4 h-4 accent-brand-500 cursor-pointer">
+                    </label>
+                    <label class="flex items-center justify-between p-3.5 rounded-2xl border border-slate-200 bg-slate-50/50 cursor-pointer hover:bg-slate-50/80 transition-all">
+                        <div class="flex items-center gap-3 text-sm">
+                            <span class="text-lg">💵</span>
+                            <div>
+                                <p class="font-medium text-slate-800">Cash / Card on Delivery</p>
+                                <p class="text-xs text-slate-400">Settle with the agent upon arrival</p>
+                            </div>
+                        </div>
+                        <input type="radio" name="payment-method" value="cod" class="w-4 h-4 accent-brand-500 cursor-pointer">
+                    </label>
+                </div>
+            </div>
+        </div>
+        
+        <div class="p-6 border-t border-slate-100 bg-slate-50/50 space-y-4 shadow-[0_-4px_24px_rgba(0,0,0,0.02)]">
+            <div class="space-y-2 text-sm text-slate-500 font-medium">
+                <div class="flex items-center justify-between">
+                    <span>Basket Subtotal:</span>
+                    <span id="cart-subtotal" class="text-slate-800 font-semibold">$0.00</span>
+                </div>
+                <div id="delivery-fee-row" class="flex items-center justify-between">
+                    <span>Delivery Fee:</span>
+                    <span class="text-slate-800 font-semibold">$2.00</span>
+                </div>
+                <div class="flex items-center justify-between font-bold text-slate-800 text-lg pt-2 border-t border-slate-200/60">
+                    <span>Total Amount:</span>
+                    <span id="cart-total-price" class="text-brand-500">$0.00</span>
+                </div>
+            </div>
+            <button onclick="checkoutAlert()" class="w-full py-3 bg-brand-500 hover:bg-brand-600 text-white font-semibold rounded-full shadow-lg shadow-brand-600/10 active:scale-95 transition-all text-sm tracking-wide">Confirm & Complete Order</button>
         </div>
     </div>
 
-    <!-- Master Global Synchronization Engine -->
     <script>
         const firebaseConfig = {
             apiKey: "AIzaSyBd-H5R8QSYQaSyu6Z-kPKHITthL5uMzxo",
@@ -209,6 +285,10 @@
 
         let currentUser = null;
         let cart = JSON.parse(localStorage.getItem('fm_cart')) || [];
+        
+        // Extended configurations for delivery fee parsing logic
+        let deliveryType = 'delivery';
+        const flatDeliveryFee = 2.00; 
 
         function signInWithGoogle() {
             auth.signInWithPopup(provider).catch(err => alert("Auth failed: " + err.message));
@@ -240,27 +320,50 @@
             }
         });
 
-        // Sidebar Actions
+        // Sidebar Action Connectors
         const sidebar = document.getElementById('cart-sidebar');
         document.getElementById('cart-icon-btn').addEventListener('click', () => sidebar.classList.remove('translate-x-full'));
         document.getElementById('close-cart-btn').addEventListener('click', () => sidebar.classList.add('translate-x-full'));
 
+        function setDeliveryType(type) {
+            deliveryType = type;
+            const btnDel = document.getElementById('btn-delivery');
+            const btnPick = document.getElementById('btn-pickup');
+            const addrWrapper = document.getElementById('address-input-wrapper');
+            const pickNote = document.getElementById('pickup-note');
+            
+            if (type === 'delivery') {
+                btnDel.className = "px-4 py-1.5 text-xs font-semibold rounded-full bg-white text-slate-900 shadow-sm transition-all";
+                btnPick.className = "px-4 py-1.5 text-xs font-semibold rounded-full text-slate-500 hover:text-slate-900 transition-all";
+                addrWrapper.classList.remove('hidden');
+                pickNote.classList.add('hidden');
+            } else {
+                btnDel.className = "px-4 py-1.5 text-xs font-semibold rounded-full text-slate-500 hover:text-slate-900 transition-all";
+                btnPick.className = "px-4 py-1.5 text-xs font-semibold rounded-full bg-white text-slate-900 shadow-sm transition-all";
+                addrWrapper.classList.add('hidden');
+                pickNote.classList.remove('hidden');
+            }
+            updateCartUI();
+        }
+
         function updateCartUI() {
             const counter = document.getElementById('cart-counter');
             const itemsList = document.getElementById('cart-items-list');
+            const subtotalPrice = document.getElementById('cart-subtotal');
             const totalPrice = document.getElementById('cart-total-price');
+            const delRow = document.getElementById('delivery-fee-row');
             
             const totalItems = cart.reduce((sum, i) => sum + i.quantity, 0);
-            if(counter) counter.textContent = totalItems;
+            if (counter) counter.textContent = totalItems;
 
-            if(!itemsList || !totalPrice) return;
+            if (!itemsList || !totalPrice) return;
 
             itemsList.innerHTML = '';
-            let totalCost = 0;
+            let subtotalCost = 0;
 
             cart.forEach((item, index) => {
                 const cost = item.price * item.quantity;
-                totalCost += cost;
+                subtotalCost += cost;
                 const li = document.createElement('li');
                 li.className = 'flex items-center justify-between p-3 rounded-xl bg-slate-50 border border-slate-100';
                 li.innerHTML = `
@@ -275,7 +378,18 @@
                 `;
                 itemsList.appendChild(li);
             });
-            totalPrice.textContent = `$${totalCost.toFixed(2)}`;
+
+            if (subtotalPrice) subtotalPrice.textContent = `$${subtotalCost.toFixed(2)}`;
+            
+            let finalTotal = subtotalCost;
+            if (deliveryType === 'delivery' && cart.length > 0) {
+                finalTotal += flatDeliveryFee;
+                if (delRow) delRow.classList.remove('hidden');
+            } else {
+                if (delRow) delRow.classList.add('hidden');
+            }
+            
+            totalPrice.textContent = `$${finalTotal.toFixed(2)}`;
         }
 
         function removeFromCart(index) {
@@ -285,15 +399,35 @@
         }
 
         function checkoutAlert() {
-            if (!currentUser) return alert("Session expired.");
-            if (cart.length === 0) return alert("Basket is empty!");
+            if (!currentUser) return alert("Session expired. Please sign in.");
+            if (cart.length === 0) return alert("Your basket is empty!");
 
-            const finalTotal = cart.reduce((sum, i) => sum + (i.price * i.quantity), 0);
+            const addressVal = document.getElementById('delivery-address').value.trim();
+            if (deliveryType === 'delivery' && !addressVal) {
+                return alert("Please specify a valid delivery location address.");
+            }
+
+            // Capture selected interactive payment radio node element value
+            const paymentRadioNodes = document.getElementsByName('payment-method');
+            let chosenPayment = 'card';
+            for (const radio of paymentRadioNodes) {
+                if (radio.checked) {
+                    chosenPayment = radio.value;
+                    break;
+                }
+            }
+
+            const subtotal = cart.reduce((sum, i) => sum + (i.price * i.quantity), 0);
+            const finalTotal = deliveryType === 'delivery' ? subtotal + flatDeliveryFee : subtotal;
+
             const payload = {
                 userId: currentUser.uid,
                 userEmail: currentUser.email,
                 userName: currentUser.displayName,
                 items: cart,
+                deliveryMethod: deliveryType,
+                deliveryAddress: deliveryType === 'delivery' ? addressVal : 'In-Store Logistics Collection',
+                paymentMethod: chosenPayment,
                 totalAmount: finalTotal.toFixed(2),
                 timestamp: new Date().toISOString(),
                 status: "Pending Processing"
@@ -303,9 +437,10 @@
                 alert("Success! Your order has been registered in our database.");
                 cart = [];
                 localStorage.removeItem('fm_cart');
+                document.getElementById('delivery-address').value = '';
                 updateCartUI();
                 sidebar.classList.add('translate-x-full');
-            }).catch(err => alert("DB error: " + err.message));
+            }).catch(err => alert("Database transmission failure: " + err.message));
         }
     </script>
 </body>
