@@ -440,11 +440,76 @@
             margin-top: 4rem;
         }
 
+        /* --- Video Parallax Styles --- */
+        .parallax-video-block {
+            position: relative;
+            height: 320px;
+            margin: 4rem 0;
+            border-radius: 12px;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: var(--shadow);
+        }
+
+        .parallax-video-mask {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            clip-path: inset(0 0 0 0);
+            z-index: 1;
+        }
+
+        .parallax-video-mask video {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            pointer-events: none;
+        }
+
+        .parallax-video-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(rgba(0, 0, 0, 0.35), rgba(0, 0, 0, 0.55));
+            z-index: 2;
+        }
+
+        .parallax-video-content {
+            position: relative;
+            z-index: 3;
+            color: var(--white);
+            text-align: center;
+            padding: 0 1.5rem;
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
+        }
+
+        .parallax-video-content h2 {
+            font-size: 2.4rem;
+            margin-bottom: 0.5rem;
+            font-weight: 700;
+        }
+
+        .parallax-video-content p {
+            font-size: 1.2rem;
+            opacity: 0.95;
+        }
+
         /* --- Responsive Styles --- */
         @media (max-width: 768px) {
             .nav-links { display: none; }
             .hero h1 { font-size: 2rem; }
             .cart-sidebar { width: 100%; right: -100%; }
+            .parallax-video-content h2 { font-size: 1.8rem; }
+            .parallax-video-content p { font-size: 1rem; }
         }
     </style>
 
@@ -532,6 +597,19 @@
                         <button class="add-to-cart-btn" onclick="addToCart('Hass Avocados (Pack of 4)', 4.25)">Add to Cart</button>
                     </div>
                 </div>
+            </div>
+        </section>
+
+        <section class="parallax-video-block">
+            <div class="parallax-video-mask">
+                <video autoplay loop muted playsinline>
+                    <source src="https://assets.mixkit.co/videos/preview/mixkit-fresh-vegetables-in-a-basket-40339-large.mp4" type="video/mp4">
+                </video>
+            </div>
+            <div class="parallax-video-overlay"></div>
+            <div class="parallax-video-content">
+                <h2>100% Organic Handpicked Harvest</h2>
+                <p>We work directly with certified regional farms to deliver crisp, fresh quality straight to your counter.</p>
             </div>
         </section>
         
