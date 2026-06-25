@@ -532,11 +532,12 @@
 
     <header class="hidden">
         <nav class="nav-container">
-            <a href="#" class="logo">🌿 FreshMarket</a>
+            <a href="index.html" class="logo">🌿 FreshMarket</a>
             <ul class="nav-links">
-                <li><a href="#">Home</a></li>
-                <li><a href="shop-directory.html">Shop</a></li>
-                <li><a href="special-deals.html">Deals</a></li>
+                <li><a href="index.html">Home</a></li>
+                <!-- Redirected directly to external structural pages -->
+                <li><a href="shop.html">Shop</a></li>
+                <li><a href="deals.html">Deals</a></li>
                 <li><button class="sign-out-btn" onclick="signOutUser()">Sign Out</button></li>
             </ul>
             <button class="cart-icon-container" id="cart-icon-btn">
@@ -548,7 +549,8 @@
     <section class="hero hidden">
         <h1>Fresh Groceries Delivered to Your Door</h1>
         <p>Organic, locally-sourced, and handpicked premium quality food items.</p>
-        <a href="#shop-directory" class="btn">Shop Directory</a>
+        <!-- Dynamic Redirect to External Shop page -->
+        <a href="shop.html" class="btn">Shop Directory</a>
     </section>
 
     <main class="hidden">
@@ -600,6 +602,7 @@
             </div>
         </section>
 
+        <!-- --- Video Parallax Block --- -->
         <section class="parallax-video-block">
             <div class="parallax-video-mask">
                 <video autoplay loop muted playsinline>
@@ -726,8 +729,7 @@
             <h2>Your Basket</h2>
             <button class="close-cart" id="close-cart-btn">&times;</button>
         </div>
-        <ul class="cart-items-list" id="cart-items-list">
-            </ul>
+        <ul class="cart-items-list" id="cart-items-list"></ul>
         <div class="cart-total-container">
             <div class="cart-total-row">
                 <span>Total:</span>
@@ -805,12 +807,10 @@
 
         // --- Directory Product Filtering Module ---
         function filterCategory(category, element) {
-            // Manage Active Class States on Buttons
             const tabs = document.querySelectorAll('.category-card');
             tabs.forEach(tab => tab.classList.remove('active'));
             element.classList.add('active');
 
-            // Toggle Product Visibility
             const products = document.querySelectorAll('#directory-grid .product-card');
             products.forEach(product => {
                 if (category === 'all' || product.getAttribute('data-category') === category) {
