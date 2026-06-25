@@ -1,98 +1,209 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Deals - Limited Offers</title>
-  <script src="https://cdn.tailwindcss.com"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Limited Hot Deals - FreshMarket</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: { 50: '#f0fdf4', 100: '#dcfce7', 500: '#2e7d32', 600: '#1b5e20' }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.75);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+        }
+    </style>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
 </head>
-<body class="min-h-screen bg-gradient-to-br from-gray-900 via-slate-900 to-zinc-950 text-white font-sans antialiased pb-12">
+<body class="bg-slate-50 text-slate-900 font-sans antialiased min-h-screen flex flex-col pb-12">
 
-  <div class="fixed top-6 left-1/2 -translate-x-1/2 z-50 w-auto">
-    <nav class="flex items-center gap-2 p-1.5 rounded-full bg-black/40 backdrop-blur-md border border-white/10 shadow-2xl">
-      <a href="shop.html" class="px-5 py-2 text-sm font-medium rounded-full text-gray-400 hover:text-white transition-all duration-200">
-        Shop
-      </a>
-      <a href="deals.html" class="px-5 py-2 text-sm font-medium rounded-full bg-rose-500 text-white shadow-lg shadow-rose-500/20 transition-all duration-200">
-        Deals
-      </a>
-    </nav>
-  </div>
-
-  <main class="max-w-4xl mx-auto px-6 pt-32">
-    
-    <header class="mb-12 text-center">
-      <span class="inline-block px-4 py-1.5 text-xs font-semibold tracking-widest uppercase bg-rose-500/10 border border-rose-500/30 rounded-full backdrop-blur-md text-rose-400">
-        Limited Time Offers
-      </span>
-      <h1 class="text-4xl md:text-5xl font-bold mt-4 tracking-tight">
-        Exclusive Deals
-      </h1>
-      <p class="text-gray-400 mt-2">
-        Premium products at highly competitive rates. Once they are gone, they are gone.
-      </p>
+    <header class="fixed top-6 left-1/2 -translate-x-1/2 z-[1000] w-[calc(100%-2rem)] max-w-4xl px-4">
+        <div class="glass-panel rounded-full px-6 py-3 flex items-center justify-between shadow-lg">
+            <a href="index.html" class="text-xl font-bold text-brand-500 tracking-tight flex items-center gap-1">🌿 FreshMarket</a>
+            <nav class="hidden md:flex items-center gap-1">
+                <a href="index.html" class="px-4 py-2 text-sm font-medium rounded-full text-slate-600 hover:text-brand-500 hover:bg-white/50 transition-all">Home</a>
+                <a href="shop.html" class="px-4 py-2 text-sm font-medium rounded-full text-slate-600 hover:text-brand-500 hover:bg-white/50 transition-all">Shop</a>
+                <a href="deals.html" class="px-4 py-2 text-sm font-medium rounded-full bg-brand-500 text-white shadow-sm">Deals</a>
+            </nav>
+            <div class="flex items-center gap-3">
+                <button id="cart-icon-btn" class="relative p-2 text-xl bg-white rounded-full border border-slate-200/60 shadow-sm active:scale-95 transition-transform">
+                    🛒 <span id="cart-counter" class="absolute -top-1 -right-1 bg-amber-500 text-white font-bold text-[10px] px-1.5 py-0.5 rounded-full">0</span>
+                </button>
+                <button onclick="signOutUser()" class="px-4 py-2 text-xs font-semibold rounded-full border border-rose-200 text-rose-600 bg-rose-50/50 hover:bg-rose-500 hover:text-white transition-all">Sign Out</button>
+            </div>
+        </div>
     </header>
 
-    <div class="space-y-6">
-      
-      <div class="relative overflow-hidden flex flex-col md:flex-row items-start md:items-center justify-between p-6 md:p-8 rounded-2xl bg-gradient-to-r from-white/5 to-white/[0.02] backdrop-blur-xl border border-white/10 shadow-2xl">
-        <div class="absolute top-0 right-0 w-32 h-32 bg-rose-500/10 rounded-full blur-3xl pointer-events-none"></div>
-        
-        <div class="space-y-3">
-          <div class="flex flex-wrap items-center gap-2">
-            <span class="px-3 py-1 text-xs font-bold rounded-full bg-rose-500 text-white shadow-lg shadow-rose-500/20">
-              40% OFF
-            </span>
-            <span class="px-3 py-1 text-xs font-medium rounded-full bg-white/5 border border-white/10 text-gray-400 flex items-center gap-1">
-              ⏱️ 2h 40m
-            </span>
-          </div>
-          <h3 class="text-xl md:text-2xl font-semibold tracking-tight text-white">
-            Flash Sale: Pro Audio Bundle
-          </h3>
-        </div>
+    <main class="max-w-6xl mx-auto px-4 md:px-8 pt-32 w-full flex-1">
+        <header class="mb-12 text-center md:text-left">
+            <span class="text-xs font-bold text-rose-500 uppercase tracking-widest bg-rose-50 px-3 py-1 rounded-full border border-rose-100">Flash Incentives</span>
+            <h1 class="text-3xl md:text-4xl font-extrabold tracking-tight mt-2 text-slate-800">Limited Hot Deals</h1>
+            <p class="text-slate-400 text-sm mt-1">High demand items allocated with aggressive markdown parameters. Act quickly.</p>
+        </header>
 
-        <div class="flex items-center gap-6 mt-6 md:mt-0 w-full md:w-auto justify-between md:justify-end pt-4 md:pt-0 border-t md:border-t-0 border-white/5">
-          <div class="text-right flex flex-col">
-            <span class="text-sm line-through text-gray-500">$250</span>
-            <span class="text-2xl font-extrabold text-rose-400">$149</span>
-          </div>
-          <button class="px-6 py-3 font-semibold text-sm bg-gradient-to-r from-rose-500 to-pink-500 hover:from-rose-400 hover:to-pink-400 text-white rounded-full transition-all duration-200 active:scale-95 shadow-lg shadow-rose-500/20">
-            Claim Deal
-          </button>
-        </div>
-      </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            
+            <div class="group relative bg-white border border-slate-100 rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all flex flex-col">
+                <span class="absolute top-4 left-4 z-10 bg-rose-500 text-white font-bold text-xs px-3 py-1 rounded-full shadow-sm">SAVE 40%</span>
+                <img src="https://images.unsplash.com/photo-1615485290382-441e4d049cb5?auto=format&fit=crop&w=400&q=80" class="h-56 w-full object-cover group-hover:scale-105 transition-transform duration-300" alt="Strawberries">
+                <div class="p-6 flex flex-col flex-1">
+                    <h3 class="font-bold text-slate-800 tracking-tight text-lg mb-2">Sweet Organic Strawberries</h3>
+                    <div class="flex items-center gap-2 mb-6">
+                        <span class="text-slate-400 line-through text-sm">$5.99</span>
+                        <span class="text-rose-500 font-extrabold text-xl">$3.49 <span class="text-xs font-normal text-slate-400">/ lb</span></span>
+                    </div>
+                    <button onclick="addToCart('Sweet Organic Strawberries', 3.49)" class="w-full mt-auto py-2.5 bg-slate-900 hover:bg-brand-500 text-white font-medium text-xs rounded-full transition-colors active:scale-95 shadow-sm">Add to Basket</button>
+                </div>
+            </div>
 
-      <div class="relative overflow-hidden flex flex-col md:flex-row items-start md:items-center justify-between p-6 md:p-8 rounded-2xl bg-gradient-to-r from-white/5 to-white/[0.02] backdrop-blur-xl border border-white/10 shadow-2xl">
-        <div class="absolute top-0 right-0 w-32 h-32 bg-rose-500/10 rounded-full blur-3xl pointer-events-none"></div>
-        
-        <div class="space-y-3">
-          <div class="flex flex-wrap items-center gap-2">
-            <span class="px-3 py-1 text-xs font-bold rounded-full bg-rose-500 text-white shadow-lg shadow-rose-500/20">
-              45% OFF
-            </span>
-            <span class="px-3 py-1 text-xs font-medium rounded-full bg-white/5 border border-white/10 text-gray-400 flex items-center gap-1">
-              ⏱️ 5h 12m
-            </span>
-          </div>
-          <h3 class="text-xl md:text-2xl font-semibold tracking-tight text-white">
-            Desk Setup Essential Pack
-          </h3>
-        </div>
+            <div class="group relative bg-white border border-slate-100 rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all flex flex-col">
+                <span class="absolute top-4 left-4 z-10 bg-rose-500 text-white font-bold text-xs px-3 py-1 rounded-full shadow-sm">SAVE 25%</span>
+                <img src="https://images.unsplash.com/photo-1550583724-b2692b85b150?auto=format&fit=crop&w=400&q=80" class="h-56 w-full object-cover group-hover:scale-105 transition-transform duration-300" alt="Whole Milk">
+                <div class="p-6 flex flex-col flex-1">
+                    <h3 class="font-bold text-slate-800 tracking-tight text-lg mb-2">Premium Whole Milk (1G)</h3>
+                    <div class="flex items-center gap-2 mb-6">
+                        <span class="text-slate-400 line-through text-sm">$5.25</span>
+                        <span class="text-rose-500 font-extrabold text-xl">$3.95</span>
+                    </div>
+                    <button onclick="addToCart('Premium Whole Milk (1G)', 3.95)" class="w-full mt-auto py-2.5 bg-slate-900 hover:bg-brand-500 text-white font-medium text-xs rounded-full transition-colors active:scale-95 shadow-sm">Add to Basket</button>
+                </div>
+            </div>
 
-        <div class="flex items-center gap-6 mt-6 md:mt-0 w-full md:w-auto justify-between md:justify-end pt-4 md:pt-0 border-t md:border-t-0 border-white/5">
-          <div class="text-right flex flex-col">
-            <span class="text-sm line-through text-gray-500">$180</span>
-            <span class="text-2xl font-extrabold text-rose-400">$99</span>
-          </div>
-          <button class="px-6 py-3 font-semibold text-sm bg-gradient-to-r from-rose-500 to-pink-500 hover:from-rose-400 hover:to-pink-400 text-white rounded-full transition-all duration-200 active:scale-95 shadow-lg shadow-rose-500/20">
-            Claim Deal
-          </button>
-        </div>
-      </div>
+            <div class="group relative bg-white border border-slate-100 rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all flex flex-col">
+                <span class="absolute top-4 left-4 z-10 bg-amber-500 text-white font-bold text-xs px-3 py-1 rounded-full shadow-sm">BOGO DEAL</span>
+                <img src="https://images.unsplash.com/photo-1608686207856-001b95cf60ca?auto=format&fit=crop&w=400&q=80" class="h-56 w-full object-cover group-hover:scale-105 transition-transform duration-300" alt="Avocados">
+                <div class="p-6 flex flex-col flex-1">
+                    <h3 class="font-bold text-slate-800 tracking-tight text-lg mb-2">Hass Avocados (Pack of 4)</h3>
+                    <div class="flex items-center gap-2 mb-6">
+                        <span class="text-slate-400 line-through text-sm">$6.50</span>
+                        <span class="text-rose-500 font-extrabold text-xl">$4.25</span>
+                    </div>
+                    <button onclick="addToCart('Hass Avocados (Pack of 4)', 4.25)" class="w-full mt-auto py-2.5 bg-slate-900 hover:bg-brand-500 text-white font-medium text-xs rounded-full transition-colors active:scale-95 shadow-sm">Add to Basket</button>
+                </div>
+            </div>
 
+        </div>
+    </main>
+
+    <div id="cart-sidebar" class="fixed top-0 right-0 h-full w-full max-w-sm bg-white shadow-2xl z-[5000] translate-x-full transition-transform duration-300 ease-in-out flex flex-col">
+        <div class="p-6 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
+            <h2 class="text-lg font-bold text-slate-800 flex items-center gap-2">🛒 Your Basket</h2>
+            <button id="close-cart-btn" class="w-8 h-8 rounded-full bg-white hover:bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-500 font-bold transition-colors shadow-sm">&times;</button>
+        </div>
+        <ul id="cart-items-list" class="flex-1 overflow-y-auto p-6 space-y-4"></ul>
+        <div class="p-6 border-t border-slate-100 bg-slate-50/50 space-y-4">
+            <div class="flex items-center justify-between font-bold text-slate-800 text-lg">
+                <span>Total Amount:</span>
+                <span id="cart-total-price">$0.00</span>
+            </div>
+            <button onclick="checkoutAlert()" class="w-full py-3 bg-brand-500 hover:bg-brand-600 text-white font-semibold rounded-full shadow-lg shadow-brand-600/10 active:scale-95 transition-all text-sm">Proceed to Checkout</button>
+        </div>
     </div>
-  </main>
 
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyBd-H5R8QSYQaSyu6Z-kPKHITthL5uMzxo",
+            authDomain: "food-store-market.firebaseapp.com",
+            databaseURL: "https://food-store-market-default-rtdb.firebaseio.com",
+            projectId: "food-store-market",
+            storageBucket: "food-store-market.firebasestorage.app",
+            messagingSenderId: "415845174728",
+            appId: "1:415845174728:web:4a2e82194ea877acf584fd",
+            measurementId: "G-EFQ1M1NWN9"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+        const auth = firebase.auth();
+
+        let currentUser = null;
+        let cart = JSON.parse(localStorage.getItem('fm_cart')) || [];
+
+        auth.onAuthStateChanged((user) => {
+            if (user) {
+                currentUser = user;
+                updateCartUI();
+            } else {
+                window.location.href = 'index.html'; // Protection layer
+            }
+        });
+
+        function signOutUser() {
+            auth.signOut().then(() => {
+                localStorage.removeItem('fm_cart');
+                window.location.href = 'index.html';
+            });
+        }
+
+        // Sidebar Event Handlers
+        const sidebar = document.getElementById('cart-sidebar');
+        document.getElementById('cart-icon-btn').addEventListener('click', () => sidebar.classList.remove('translate-x-full'));
+        document.getElementById('close-cart-btn').addEventListener('click', () => sidebar.classList.add('translate-x-full'));
+
+        function addToCart(name, price) {
+            const existing = cart.find(i => i.name === name);
+            if(existing) { existing.quantity += 1; } else { cart.push({name, price, quantity: 1}); }
+            localStorage.setItem('fm_cart', JSON.stringify(cart));
+            updateCartUI();
+        }
+
+        function updateCartUI() {
+            document.getElementById('cart-counter').textContent = cart.reduce((sum, i) => sum + i.quantity, 0);
+            const list = document.getElementById('cart-items-list');
+            let cost = 0;
+            list.innerHTML = '';
+            
+            cart.forEach((item, index) => {
+                cost += (item.price * item.quantity);
+                const li = document.createElement('li');
+                li.className = 'flex items-center justify-between p-3 rounded-xl bg-slate-50 border border-slate-100';
+                li.innerHTML = `
+                    <div class="text-sm">
+                        <p class="font-semibold text-slate-800">${item.name}</p>
+                        <p class="text-xs text-slate-400 font-medium">${item.quantity} × $${item.price.toFixed(2)}</p>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span class="text-sm font-bold text-slate-700">$${(item.price * item.quantity).toFixed(2)}</span>
+                        <button onclick="removeFromCart(${index})" class="text-slate-300 hover:text-rose-500 font-bold text-lg">&times;</button>
+                    </div>
+                `;
+                list.appendChild(li);
+            });
+            document.getElementById('cart-total-price').textContent = `$${cost.toFixed(2)}`;
+        }
+
+        function removeFromCart(index) {
+            cart.splice(index, 1);
+            localStorage.setItem('fm_cart', JSON.stringify(cart));
+            updateCartUI();
+        }
+
+        function checkoutAlert() {
+            if (cart.length === 0) return alert("Basket is empty!");
+            const finalTotal = cart.reduce((sum, i) => sum + (i.price * i.quantity), 0);
+            const payload = {
+                userId: currentUser.uid, userEmail: currentUser.email, userName: currentUser.displayName,
+                items: cart, totalAmount: finalTotal.toFixed(2), timestamp: new Date().toISOString(), status: "Pending Processing"
+            };
+            database.ref('orders').push(payload).then(() => {
+                alert("Success! Order saved.");
+                cart = []; localStorage.removeItem('fm_cart'); updateCartUI();
+                sidebar.classList.add('translate-x-full');
+            });
+        }
+    </script>
 </body>
 </html>
